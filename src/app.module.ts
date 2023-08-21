@@ -9,6 +9,7 @@ import { MaintenancierModule } from './maintenancier/maintenancier.module';
 import { InterventionModule } from './intervention/intervention.module';
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EtudiantModule } from './etudiant/etudiant.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    EtudiantModule,
   ],
   controllers: [AppController],
   providers: [AppService],
