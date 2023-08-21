@@ -10,6 +10,8 @@ import { InterventionModule } from './intervention/intervention.module';
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EtudiantModule } from './etudiant/etudiant.module';
+import { FirebaseService } from './firebase/firebase.service';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
@@ -33,8 +35,12 @@ import { EtudiantModule } from './etudiant/etudiant.module';
       synchronize: true,
     }),
     EtudiantModule,
+    FirebaseModule,
+    // FirebaseModule.forRoot({
+    //   googleApplicationCredential: ''
+    // }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, FirebaseService],
 })
 export class AppModule {}
