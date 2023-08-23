@@ -13,12 +13,9 @@ import { serviceAccount } from 'credentials.json';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userService: UserService,
-    private readonly firebaseService: FirebaseService,
-  ) {}
+  constructor(private readonly firebaseService: FirebaseService) {}
 
-  async register(partialUser: Partial<User>): Promise<Partial<User>>{
+  async firebaseRegister(partialUser: Partial<User>): Promise<unknown> {
     const { email, password } = partialUser;
     try {
       const userCredential: UserCredential =
@@ -28,7 +25,7 @@ export class AuthService {
           password,
         );
       await sendEmailVerification(userCredential.user);
-      return this.userService.createUser(partialUser);
+      return userCredential;
     } catch (error) {
       throw new HttpException(
         {
@@ -42,6 +39,27 @@ export class AuthService {
       );
     }
   }
+  
 
-  async login() {}
+  async FirebaseLogin(partialUser: Partial<User>): Promise<unknown> {
+    try {
+      const { email, password } = partialUser;
+      return await signInWithEmailAndPassword(
+        this.firebaseService.auth,
+        email,
+        password,
+      );
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
 }

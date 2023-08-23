@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -7,11 +12,12 @@ import { AdminModule } from './admin/admin.module';
 import { PersonnelModule } from './personnel/personnel.module';
 import { MaintenancierModule } from './maintenancier/maintenancier.module';
 import { InterventionModule } from './intervention/intervention.module';
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EtudiantModule } from './etudiant/etudiant.module';
 import { FirebaseService } from './firebase/firebase.service';
 import { FirebaseModule } from './firebase/firebase.module';
+import { MiddlewareVerifyTokenMiddleware } from './middleware/middleware.verify-token/middleware.verify-token.middleware';
 
 @Module({
   imports: [
@@ -43,4 +49,14 @@ import { FirebaseModule } from './firebase/firebase.module';
   controllers: [AppController],
   providers: [AppService, FirebaseService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    //consumer.apply(MiddlewareVerifyTokenMiddleware).forRoutes('');
+    consumer
+      .apply(MiddlewareVerifyTokenMiddleware)
+      .exclude(
+        { path: 'api/user/auth/register', method: RequestMethod.ALL },
+        { path: 'api/user/auth/login', method: RequestMethod.ALL },
+      ).forRoutes('');
+  }
+}

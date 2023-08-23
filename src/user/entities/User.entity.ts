@@ -12,25 +12,26 @@ export class User extends Timestamp {
   nom: string;
 
   @Column({ length: 50 })
-  Prenom: string;
+  prenom: string;
 
   @Column({ unique: true, nullable: false })
   email: string;
 
-  @Column()
+  // peut etre retiré car est deja geré par Firebase
+  @Column({nullable:true})
   password: string;
 
-  @Column()
+  @Column({default:false})
   isVerified: boolean;
 
   @Column({
     type : 'enum',
     enum : UserRoleEnum,
-    default : UserRoleEnum.ADMIN
+    default : UserRoleEnum.ETUDIANT
   })
   role: string;
 
-  @Column()
+  @Column({default:false})
   isBlocked: boolean;
 
   @ManyToOne(

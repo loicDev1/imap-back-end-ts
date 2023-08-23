@@ -3,6 +3,6 @@ import { Column, Entity } from "typeorm";
 
 @Entity('user')
 export class Maintenancier extends Personnel{
-    @Column()
+    @Column({nullable: true})
     age  : number;
 }
