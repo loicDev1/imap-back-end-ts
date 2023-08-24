@@ -24,3 +24,8 @@ export async function verifyToken(token: string): Promise<any> {
     });
   });
 }
+
+
+export async function decodeJwtTokenToUser(token: string): Promise<any>{
+  return await verifyToken(token)
+}

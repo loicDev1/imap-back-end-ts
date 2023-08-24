@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from './dto/CreateUserDTO';
@@ -27,11 +28,11 @@ export class UserController {
   }
 
 
-  @Get()
-  getUsers() {}
+  @Get('profile')
+  getUserProfile(@Query('token') userToken : string) {
+    return this.userService.getUserProfile(userToken);
+  }
 
-  @Get(':id')
-  getUserById(@Param('id') id) {}
 
   @Patch(':id')
   async updateUser(

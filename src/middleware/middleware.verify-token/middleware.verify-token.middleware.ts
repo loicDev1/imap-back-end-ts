@@ -20,7 +20,7 @@ export class MiddlewareVerifyTokenMiddleware implements NestMiddleware {
         await verifyToken(tokenProvidedByBody);
       } else {
         throw new HttpException(
-          "token it'is not provided ",
+          "Token it's not provided",
           HttpStatus.FORBIDDEN,
         );
       }

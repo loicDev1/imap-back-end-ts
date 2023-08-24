@@ -4,7 +4,10 @@ import { User } from './entities/User.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
-import { generateTokenForUser } from 'src/helpers/helpers.utils';
+import {
+  decodeJwtTokenToUser,
+  generateTokenForUser,
+} from 'src/helpers/helpers.utils';
 
 @Injectable()
 export class UserService {
@@ -41,11 +44,12 @@ export class UserService {
     return { ...user, userToken };
   }
 
-  async getUsers() {}
-
-  async getUserById() {}
+  async getUserProfile(userToken: string) {
+    const result = await decodeJwtTokenToUser(userToken);
+    const user = await this.userRepository.findOneBy({ id : result.data.id });
+    delete user.password;
+    return user;
+  }
 
   async updateUser() {}
-
-  async deleteUser() {}
 }

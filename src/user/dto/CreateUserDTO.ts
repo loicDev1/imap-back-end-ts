@@ -22,10 +22,10 @@ export class CreateUserDTO {
 
   @IsString()
   @IsNotEmpty()
-//   @IsStrongPassword({
-//     minLength: 8,
-//     minUppercase: 1,
-//   })
+  @IsStrongPassword({
+    minLength: 8,
+    minUppercase: 1,
+  })
   password: string;
 
   @IsEmail()

@@ -18,6 +18,10 @@ import { EtudiantModule } from './etudiant/etudiant.module';
 import { FirebaseService } from './firebase/firebase.service';
 import { FirebaseModule } from './firebase/firebase.module';
 import { MiddlewareVerifyTokenMiddleware } from './middleware/middleware.verify-token/middleware.verify-token.middleware';
+import { VerifyAdminRoleMiddleware } from './middleware/verify-admin-role/verify-admin-role.middleware';
+import { VerifyEtudiantRoleMiddleware } from './middleware/verify-etudiant-role/verify-etudiant-role.middleware';
+import { VerifyMaintenancierRoleMiddleware } from './middleware/verify-maintenancier-role/verify-maintenancier-role.middleware';
+import { IsBlockedUserMiddleware } from './middleware/is-blocked-user/is-blocked-user.middleware';
 
 @Module({
   imports: [
@@ -51,12 +55,21 @@ import { MiddlewareVerifyTokenMiddleware } from './middleware/middleware.verify-
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
-    //consumer.apply(MiddlewareVerifyTokenMiddleware).forRoutes('');
     consumer
       .apply(MiddlewareVerifyTokenMiddleware)
       .exclude(
         { path: 'api/user/auth/register', method: RequestMethod.ALL },
         { path: 'api/user/auth/login', method: RequestMethod.ALL },
-      ).forRoutes('');
+      )
+      .forRoutes('')
+      // .apply(IsBlockedUserMiddleware)
+      // .exclude({ path: 'api/user/auth/register', method: RequestMethod.ALL })
+      // .forRoutes('')
+      .apply(VerifyAdminRoleMiddleware)
+      .forRoutes('api/admin*')
+      .apply(VerifyEtudiantRoleMiddleware)
+      .forRoutes('api/etudiant*')
+      .apply(VerifyMaintenancierRoleMiddleware)
+      .forRoutes('api/maintenancier*');
   }
 }
