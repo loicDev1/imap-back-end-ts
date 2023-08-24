@@ -5,6 +5,7 @@ import { User } from 'src/user/entities/User.entity';
 import { Repository } from 'typeorm';
 import { Admin } from './entities/Admin.entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { HttpResponsePerso } from 'src/Generics/HttpResponsePerso';
 
 @Injectable()
 export class AdminService {
@@ -22,16 +23,19 @@ export class AdminService {
     }
   }
 
-  async blockUser(userToken: string, userId: number) {
+  async blockUser(
+    userToken: string,
+    userId: number,
+  ): Promise<HttpResponsePerso> {
     try {
       const result = await decodeJwtTokenToUser(userToken);
-        const userUpdated = await this.userRepository.preload({
-          id: userId,
-          isBlocked: true,
-          blockedBy: result.data.id,
-        });
-        this.userRepository.save(userUpdated);
-        return { status: HttpStatus.OK, message: 'User Blocked' };
+      const userUpdated = await this.userRepository.preload({
+        id: userId,
+        isBlocked: true,
+        blockedBy: result.data.id,
+      });
+      this.userRepository.save(userUpdated);
+      return { status: HttpStatus.OK, message: 'User Blocked' };
     } catch (error) {
       console.log(error);
     }

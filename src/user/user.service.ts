@@ -8,6 +8,9 @@ import {
   decodeJwtTokenToUser,
   generateTokenForUser,
 } from 'src/helpers/helpers.utils';
+import { HttpResponsePerso } from 'src/Generics/HttpResponsePerso';
+import { UpdateUserDTO } from './dto/UpdateUserDTO';
+import { isBlockedUser, isVerifyEmail } from 'src/helpers/helpers.userControls';
 
 @Injectable()
 export class UserService {
@@ -37,19 +40,62 @@ export class UserService {
   }
 
   async login(credentials: Partial<User>): Promise<unknown> {
-    const { email, password } = credentials;
-    const authenticateUser = await this.authService.FirebaseLogin(credentials);
-    const user = await this.userRepository.findOneBy({ email });
-    const userToken = await generateTokenForUser(user);
-    return { ...user, userToken };
+    try {
+      const { email, password } = credentials;
+      const authenticateUser = await this.authService.FirebaseLogin(
+        credentials,
+      );
+      
+      const result = await Promise.all([
+        await isBlockedUser(
+          await isVerifyEmail(
+            authenticateUser,
+            this.userRepository,
+          ),
+        ),
+      ]);
+
+      const user = result[result.length - 1];
+      const userToken = await generateTokenForUser(user);
+      return { ...user, userToken };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   async getUserProfile(userToken: string) {
     const result = await decodeJwtTokenToUser(userToken);
-    const user = await this.userRepository.findOneBy({ id : result.data.id });
+    const user = await this.userRepository.findOneBy({ id: result.data.id });
     delete user.password;
     return user;
   }
 
-  async updateUser() {}
+  async updateUser(
+    updateUser: UpdateUserDTO,
+  ): Promise<HttpResponsePerso | void> {
+    try {
+      await this.userRepository.save(updateUser);
+      //await this.userRepository.save(userUpdated);
+      return { status: HttpStatus.OK, message: 'user updated successfully' };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async ResetPasswordByEmail(email: string) {
+    try {
+      return this.authService.FirebaseResetPasswordByEmail(email);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

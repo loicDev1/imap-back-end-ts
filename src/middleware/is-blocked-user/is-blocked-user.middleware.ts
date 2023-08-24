@@ -11,10 +11,22 @@ export class IsBlockedUserMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
     try {
       const result = await decodeJwtTokenToUser(req.query.token);
-      if (!result.data.isBlocked) {
-        next();
-      } else {
-        throw new HttpException('user is blocked', HttpStatus.UNAUTHORIZED);
+      switch (result) {
+        case result.data.isBlocked:
+          throw new HttpException(
+            'This user is blocked',
+            HttpStatus.UNAUTHORIZED,
+          );
+          break;
+        case !result.data.emailVerified:
+          throw new HttpException(
+            "This user's email is not verify !",
+            HttpStatus.UNAUTHORIZED,
+          );
+          break;
+        default:
+          next();
+          break;
       }
     } catch (error) {
       throw new HttpException(

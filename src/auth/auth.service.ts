@@ -7,17 +7,17 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { FirebaseService } from 'src/firebase/firebase.service';
-import { serviceAccount } from 'credentials.json';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly firebaseService: FirebaseService) {}
 
   async firebaseRegister(partialUser: Partial<User>): Promise<unknown> {
-    const { email, password } = partialUser;
     try {
+      const { email, password } = partialUser;
       const userCredential: UserCredential =
         await createUserWithEmailAndPassword(
           this.firebaseService.auth,
@@ -39,9 +39,8 @@ export class AuthService {
       );
     }
   }
-  
 
-  async FirebaseLogin(partialUser: Partial<User>): Promise<unknown> {
+  async FirebaseLogin(partialUser: Partial<User>): Promise<any> {
     try {
       const { email, password } = partialUser;
       return await signInWithEmailAndPassword(
@@ -49,6 +48,23 @@ export class AuthService {
         email,
         password,
       );
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  async FirebaseResetPasswordByEmail(email: string) {
+    try {
+      return await sendPasswordResetEmail(this.firebaseService.auth, email);
     } catch (error) {
       throw new HttpException(
         {

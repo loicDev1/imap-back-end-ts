@@ -21,7 +21,7 @@ import { MiddlewareVerifyTokenMiddleware } from './middleware/middleware.verify-
 import { VerifyAdminRoleMiddleware } from './middleware/verify-admin-role/verify-admin-role.middleware';
 import { VerifyEtudiantRoleMiddleware } from './middleware/verify-etudiant-role/verify-etudiant-role.middleware';
 import { VerifyMaintenancierRoleMiddleware } from './middleware/verify-maintenancier-role/verify-maintenancier-role.middleware';
-import { IsBlockedUserMiddleware } from './middleware/is-blocked-user/is-blocked-user.middleware';
+import { IsBlockedUserMiddleware as IsBlockedOrUnverifiedEmailMiddleware } from './middleware/is-blocked-user/is-blocked-user.middleware';
 
 @Module({
   imports: [
@@ -56,15 +56,16 @@ import { IsBlockedUserMiddleware } from './middleware/is-blocked-user/is-blocked
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
-      .apply(MiddlewareVerifyTokenMiddleware)
+      .apply(
+        MiddlewareVerifyTokenMiddleware,
+        IsBlockedOrUnverifiedEmailMiddleware,
+      )
       .exclude(
         { path: 'api/user/auth/register', method: RequestMethod.ALL },
         { path: 'api/user/auth/login', method: RequestMethod.ALL },
+        { path: 'api/user/resetPassword', method: RequestMethod.ALL },
       )
       .forRoutes('')
-      // .apply(IsBlockedUserMiddleware)
-      // .exclude({ path: 'api/user/auth/register', method: RequestMethod.ALL })
-      // .forRoutes('')
       .apply(VerifyAdminRoleMiddleware)
       .forRoutes('api/admin*')
       .apply(VerifyEtudiantRoleMiddleware)
