@@ -45,13 +45,10 @@ export class UserService {
       const authenticateUser = await this.authService.FirebaseLogin(
         credentials,
       );
-      
+
       const result = await Promise.all([
         await isBlockedUser(
-          await isVerifyEmail(
-            authenticateUser,
-            this.userRepository,
-          ),
+          await isVerifyEmail(authenticateUser, this.userRepository),
         ),
       ]);
 
@@ -73,10 +70,14 @@ export class UserService {
   }
 
   async getUserProfile(userToken: string) {
-    const result = await decodeJwtTokenToUser(userToken);
-    const user = await this.userRepository.findOneBy({ id: result.data.id });
-    delete user.password;
-    return user;
+    try {
+      const result = await decodeJwtTokenToUser(userToken);
+      const user = await this.userRepository.findOneBy({ id: result.data.id });
+      delete user.password;
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async updateUser(
@@ -84,7 +85,6 @@ export class UserService {
   ): Promise<HttpResponsePerso | void> {
     try {
       await this.userRepository.save(updateUser);
-      //await this.userRepository.save(userUpdated);
       return { status: HttpStatus.OK, message: 'user updated successfully' };
     } catch (error) {
       console.log(error);

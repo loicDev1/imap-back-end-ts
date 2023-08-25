@@ -27,7 +27,7 @@ export async function isVerifyEmail(
 }
 
 export async function isBlockedUser(user: Partial<User>): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (!user.isBlocked) {
       resolve(user);
     } else {

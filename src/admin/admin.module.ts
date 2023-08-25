@@ -7,8 +7,8 @@ import { UserModule } from 'src/user/user.module';
 import { Admin } from './entities/Admin.entities';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), UserModule],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService],
 })
 export class AdminModule {}

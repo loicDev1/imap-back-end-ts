@@ -6,12 +6,14 @@ import { Repository } from 'typeorm';
 import { Admin } from './entities/Admin.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpResponsePerso } from 'src/Generics/HttpResponsePerso';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
   ) {}
 
   async getUsers(userToken: string): Promise<User[]> {
@@ -42,11 +44,25 @@ export class AdminService {
   }
 
   async registerUser(
-    token: string,
-    parialUser: Partial<User>,
-  ) /*: Partial<User>*/ {
-    // const result = await decodeJwtTokenToUser(userToken);
-    // return
+    userToken: string,
+    partialUser: Partial<User>,
+  ): Promise<Partial<User>> {
+    try {
+      const result = await decodeJwtTokenToUser(userToken);
+      partialUser.createdBy = result.data.id;
+      return this.userService.register(partialUser);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   async deleteUser() {}

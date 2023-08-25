@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { User } from 'src/user/entities/User.entity';
 import { CreateUserDTO } from 'src/user/dto/CreateUserDTO';
@@ -14,14 +23,17 @@ export class AdminController {
 
   @Patch('blockedUser/:id')
   async blockUser(
-    @Param('id' , ParseIntPipe) userId : number,
-    @Query('token') userToken : string,
+    @Param('id', ParseIntPipe) userId: number,
+    @Query('token') userToken: string,
   ): Promise<any> {
     return this.adminService.blockUser(userToken, userId);
   }
 
   @Post('registerUser')
-  async registerUser(@Body() createUserDTO : CreateUserDTO){
-    
+  async registerUser(
+    @Body() createUserDTO: CreateUserDTO,
+    @Query('token') userToken: string,
+  ) {
+    this.adminService.registerUser(userToken, createUserDTO);
   }
 }

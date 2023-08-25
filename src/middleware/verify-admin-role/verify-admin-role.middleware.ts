@@ -15,7 +15,7 @@ export class VerifyAdminRoleMiddleware implements NestMiddleware {
       if (UserRoleEnum.ADMIN === result.data.role) {
         next();
       } else {
-        throw new HttpException('permission denied', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('permission denied !', HttpStatus.UNAUTHORIZED);
       }
     } catch (error) {
       throw new HttpException(
