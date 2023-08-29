@@ -3,6 +3,6 @@ import { Column, Entity } from "typeorm";
 
 @Entity('user')
 export class Personnel extends User{
-    @Column({nullable: true})
-    anneeService: Date;
+    // @Column({nullable: true})
+    // anneeService: Date;
 }

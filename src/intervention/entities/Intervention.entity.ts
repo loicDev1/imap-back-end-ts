@@ -1,19 +1,28 @@
 import { InterventionStatusEnum } from 'src/Generics/InterventionStatusEnum';
+import { Timestamp } from 'src/Generics/TimeStamp';
 import { User } from 'src/user/entities/User.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('intervention')
-export class Intervention {
+export class Intervention extends Timestamp {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
+    type: 'enum',
     enum: InterventionStatusEnum,
+    default: InterventionStatusEnum.DEBUT
   })
   status: string;
 
+  @Column({nullable: false})
+  titre: string;
+
+  @Column({nullable: false})
+  description: string;
+
   @Column()
-  message: string;
+  service: string;
 
   @ManyToOne((type) => User, (user) => user.intervention, {
     cascade: true,

@@ -1,18 +1,21 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { User } from 'src/user/entities/User.entity';
 import { CreateUserDTO } from 'src/user/dto/CreateUserDTO';
+import { UpdateUserRoleDTO } from './dto/UpdateUserRoleDTO';
 
-@Controller('api/admin')
+@Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
@@ -33,7 +36,18 @@ export class AdminController {
   async registerUser(
     @Body() createUserDTO: CreateUserDTO,
     @Query('token') userToken: string,
+    @Req() Request: any,
   ) {
-    this.adminService.registerUser(userToken, createUserDTO);
+    return this.adminService.registerUser(userToken, createUserDTO, Request);
+  }
+
+  @Patch('updateUser')
+  async updateUser(@Body() updateUserRole: UpdateUserRoleDTO) {
+    return this.adminService.updateUserRole(updateUserRole);
+  }
+
+  @Delete('user/:id')
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.deleteUser(id);
   }
 }

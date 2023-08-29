@@ -10,26 +10,26 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { PersonnelModule } from './personnel/personnel.module';
-import { MaintenancierModule } from './maintenancier/maintenancier.module';
 import { InterventionModule } from './intervention/intervention.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EtudiantModule } from './etudiant/etudiant.module';
 import { FirebaseService } from './firebase/firebase.service';
 import { FirebaseModule } from './firebase/firebase.module';
 import { MiddlewareVerifyTokenMiddleware } from './middleware/middleware.verify-token/middleware.verify-token.middleware';
 import { VerifyAdminRoleMiddleware } from './middleware/verify-admin-role/verify-admin-role.middleware';
-import { VerifyEtudiantRoleMiddleware } from './middleware/verify-etudiant-role/verify-etudiant-role.middleware';
-import { VerifyMaintenancierRoleMiddleware } from './middleware/verify-maintenancier-role/verify-maintenancier-role.middleware';
 import { IsBlockedUserMiddleware as IsBlockedOrUnverifiedEmailMiddleware } from './middleware/is-blocked-user/is-blocked-user.middleware';
-
+import { SocketModule } from './socket/socket.module';
+import { LogModule } from './log/log.module';
+import { VerifyPersonnelRoleMiddleware } from './middleware/verify-personnel-role/verify-personnel-role.middleware';
+import { Log } from './log/entities/log.entity';
+import { NotificationModule } from './notification/notification.module';
+import { InsertLogMiddleware } from './middleware/insert-log/insert-log.middleware';
 @Module({
   imports: [
     UserModule,
     AuthModule,
     AdminModule,
     PersonnelModule,
-    MaintenancierModule,
     InterventionModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -44,11 +44,10 @@ import { IsBlockedUserMiddleware as IsBlockedOrUnverifiedEmailMiddleware } from 
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    EtudiantModule,
     FirebaseModule,
-    // FirebaseModule.forRoot({
-    //   googleApplicationCredential: ''
-    // }),
+    SocketModule,
+    LogModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, FirebaseService],
@@ -61,16 +60,19 @@ export class AppModule implements NestModule {
         IsBlockedOrUnverifiedEmailMiddleware,
       )
       .exclude(
-        { path: 'api/user/auth/register', method: RequestMethod.ALL },
-        { path: 'api/user/auth/login', method: RequestMethod.ALL },
-        { path: 'api/user/resetPassword', method: RequestMethod.ALL },
+        { path: 'user/auth/register', method: RequestMethod.ALL },
+        { path: 'user/auth/login', method: RequestMethod.ALL },
+        { path: 'user/resetPassword', method: RequestMethod.ALL },
       )
       .forRoutes('')
       .apply(VerifyAdminRoleMiddleware)
-      .forRoutes('api/admin*')
-      .apply(VerifyEtudiantRoleMiddleware)
-      .forRoutes('api/etudiant*')
-      .apply(VerifyMaintenancierRoleMiddleware)
-      .forRoutes('api/maintenancier*');
+      .forRoutes({ path: 'admin*', method: RequestMethod.ALL })
+      .apply(VerifyPersonnelRoleMiddleware)
+      .forRoutes(
+        { path: 'personnel*', method: RequestMethod.ALL },
+        { path: 'intervention*', method: RequestMethod.ALL },
+      )
+      .apply(InsertLogMiddleware)
+      .forRoutes('');
   }
 }

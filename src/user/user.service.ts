@@ -11,6 +11,8 @@ import {
 import { HttpResponsePerso } from 'src/Generics/HttpResponsePerso';
 import { UpdateUserDTO } from './dto/UpdateUserDTO';
 import { isBlockedUser, isVerifyEmail } from 'src/helpers/helpers.userControls';
+import { LogService } from 'src/log/log.service';
+import { getRequestInfos } from 'src/helpers/helpers.useRequest';
 
 @Injectable()
 export class UserService {
@@ -18,13 +20,24 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly authService: AuthService,
+    private readonly logService: LogService,
   ) {}
 
-  async register(partialUser: Partial<User>): Promise<Partial<User>> {
+  async register(
+    partialUser: Partial<User>,
+    Request?: any,
+  ): Promise<Partial<User>> {
     try {
       await this.authService.firebaseRegister(partialUser);
       delete partialUser.password;
-      return await this.userRepository.save(partialUser);
+      const userCreated = await this.userRepository.save(partialUser);
+      const { description, typeOperation } = getRequestInfos(Request);
+      this.logService.createLog({
+        description,
+        typeOperation,
+        user: userCreated.id,
+      });
+      return userCreated;
     } catch (error: any) {
       throw new HttpException(
         {
@@ -39,7 +52,7 @@ export class UserService {
     }
   }
 
-  async login(credentials: Partial<User>): Promise<unknown> {
+  async login(credentials: Partial<User>, Request?: any): Promise<unknown> {
     try {
       const { email, password } = credentials;
       const authenticateUser = await this.authService.FirebaseLogin(
@@ -54,6 +67,14 @@ export class UserService {
 
       const user = result[result.length - 1];
       const userToken = await generateTokenForUser(user);
+
+      const { description, typeOperation } = getRequestInfos(Request);
+      this.logService.createLog({
+        description,
+        typeOperation,
+        user: user.id,
+      });
+
       return { ...user, userToken };
     } catch (error) {
       throw new HttpException(
@@ -76,7 +97,16 @@ export class UserService {
       delete user.password;
       return user;
     } catch (error) {
-      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
@@ -87,15 +117,40 @@ export class UserService {
       await this.userRepository.save(updateUser);
       return { status: HttpStatus.OK, message: 'user updated successfully' };
     } catch (error) {
-      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
-  async ResetPasswordByEmail(email: string) {
+  async ResetPasswordByEmail(email: string, userToken: string, Request?: any) {
     try {
-      return this.authService.FirebaseResetPasswordByEmail(email);
+      const result = await decodeJwtTokenToUser(userToken);
+      const { description, typeOperation } = getRequestInfos(Request);
+      this.logService.createLog({
+        description,
+        typeOperation,
+        user: result.data.id,
+      });
+      return await this.authService.FirebaseResetPasswordByEmail(email);
     } catch (error) {
-      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: error.message,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }

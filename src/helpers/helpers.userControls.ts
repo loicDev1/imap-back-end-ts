@@ -10,8 +10,8 @@ export async function isVerifyEmail(
     const { emailVerified, email } = authenticateUser.user.reloadUserInfo;
     if (emailVerified) {
       const userFound = await userRepository.findOneBy({ email });
-      // if (!userFound)
-      //   reject({ error: HttpStatus.NOT_FOUND, message: 'User not found' });
+      if (!userFound)
+        reject({ error: HttpStatus.NOT_FOUND, message: 'User not found' });
       userFound.emailVerified = true;
       await userRepository.save({ ...userFound });
       resolve(userFound);

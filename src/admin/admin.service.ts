@@ -7,6 +7,7 @@ import { Admin } from './entities/Admin.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpResponsePerso } from 'src/Generics/HttpResponsePerso';
 import { UserService } from 'src/user/user.service';
+import { USER_ROLES } from 'src/Generics/UserRoleList';
 
 @Injectable()
 export class AdminService {
@@ -46,11 +47,12 @@ export class AdminService {
   async registerUser(
     userToken: string,
     partialUser: Partial<User>,
+    Request : any
   ): Promise<Partial<User>> {
     try {
       const result = await decodeJwtTokenToUser(userToken);
       partialUser.createdBy = result.data.id;
-      return this.userService.register(partialUser);
+      return this.userService.register(partialUser, Request);
     } catch (error) {
       throw new HttpException(
         {
@@ -65,5 +67,27 @@ export class AdminService {
     }
   }
 
-  async deleteUser() {}
+  async updateUserRole(updateUserRole: Partial<User>) {
+    try {
+      if (USER_ROLES.includes(updateUserRole.role)) {
+        await this.userRepository.save(updateUserRole);
+        return { status: HttpStatus.OK, message: 'user updated successfully' };
+      } else {
+        throw new HttpException(
+          'this user role is not available',
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteUser(id: number) {
+    try {
+      return await this.userRepository.softDelete(id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

@@ -1,1 +1,1 @@
-export const USER_ROLES: string[] = ['admin', 'etudiant', 'maintenancier'];
+export const USER_ROLES: string[] = ['admin', 'personnel'];

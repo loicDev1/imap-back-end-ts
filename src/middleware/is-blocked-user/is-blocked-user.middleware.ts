@@ -9,6 +9,7 @@ import { decodeJwtTokenToUser } from 'src/helpers/helpers.utils';
 @Injectable()
 export class IsBlockedUserMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
+    console.log('IsBlockedOrUnverifiedEmailMiddleware');
     try {
       const result = await decodeJwtTokenToUser(req.query.token);
       if (result.data.isBlocked) {

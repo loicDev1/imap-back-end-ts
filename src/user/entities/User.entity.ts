@@ -8,6 +8,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UserPersonnelEnum } from 'src/Generics/UserServiceEnum';
+import { Log } from 'src/log/entities/log.entity';
 
 @Entity('user')
 export class User extends Timestamp {
@@ -33,9 +35,15 @@ export class User extends Timestamp {
   @Column({
     type: 'enum',
     enum: UserRoleEnum,
-    default: UserRoleEnum.ETUDIANT,
+    default: UserRoleEnum.PERSONNEL,
   })
   role: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserPersonnelEnum,
+  })
+  service: string;
 
   @Column({ default: false })
   isBlocked: boolean;
@@ -46,12 +54,16 @@ export class User extends Timestamp {
   @ManyToOne((type) => User, (user) => user.updatedBy)
   updatedBy: User;
 
-  // @Column({ nullable: true, default: '' })
-  // profilePicture: string;
+  @Column({ nullable: true })
+  profilePicture: string;
 
+  //@Column({nullable: false})
   @ManyToOne((type) => User, (user) => user.blockedBy)
   blockedBy: User[];
 
   @OneToMany((type) => Intervention, (intervention) => intervention.user)
   intervention: Intervention[];
+
+  @OneToMany((type) => Log, (log) => log.user)
+  log: Log[];
 }
