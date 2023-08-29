@@ -18,12 +18,12 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { MiddlewareVerifyTokenMiddleware } from './middleware/middleware.verify-token/middleware.verify-token.middleware';
 import { VerifyAdminRoleMiddleware } from './middleware/verify-admin-role/verify-admin-role.middleware';
 import { IsBlockedUserMiddleware as IsBlockedOrUnverifiedEmailMiddleware } from './middleware/is-blocked-user/is-blocked-user.middleware';
-import { SocketModule } from './socket/socket.module';
 import { LogModule } from './log/log.module';
 import { VerifyPersonnelRoleMiddleware } from './middleware/verify-personnel-role/verify-personnel-role.middleware';
 import { Log } from './log/entities/log.entity';
 import { NotificationModule } from './notification/notification.module';
 import { InsertLogMiddleware } from './middleware/insert-log/insert-log.middleware';
+import { WebsocketModule } from './websocket/websocket.module';
 @Module({
   imports: [
     UserModule,
@@ -45,9 +45,9 @@ import { InsertLogMiddleware } from './middleware/insert-log/insert-log.middlewa
       synchronize: true,
     }),
     FirebaseModule,
-    SocketModule,
     LogModule,
     NotificationModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [AppService, FirebaseService],
