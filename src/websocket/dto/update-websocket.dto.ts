@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateWebsocketDto } from './create-websocket.dto';
+import { CreateWsNotificationDto } from './create-websocket.dto';
 
-export class UpdateWebsocketDto extends PartialType(CreateWebsocketDto) {
+export class UpdateWebsocketDto extends PartialType(CreateWsNotificationDto) {
   id: number;
 }

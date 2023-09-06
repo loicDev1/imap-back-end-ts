@@ -24,6 +24,7 @@ import { Log } from './log/entities/log.entity';
 import { NotificationModule } from './notification/notification.module';
 import { InsertLogMiddleware } from './middleware/insert-log/insert-log.middleware';
 import { WebsocketModule } from './websocket/websocket.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
     UserModule,
@@ -43,6 +44,15 @@ import { WebsocketModule } from './websocket/websocket.module';
       database: process.env.DB_NAME,
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.HOST,
+        auth: {
+          user: process.env.USER,
+          pass: process.env.PASS,
+        },
+      },
     }),
     FirebaseModule,
     LogModule,

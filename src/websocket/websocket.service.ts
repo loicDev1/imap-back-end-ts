@@ -1,31 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { CreateWebsocketDto } from './dto/create-websocket.dto';
+import { Server, Socket } from 'socket.io';
+import { CreateWsNotificationDto } from './dto/create-websocket.dto';
 import { UpdateWebsocketDto } from './dto/update-websocket.dto';
 import { NotificationService } from 'src/notification/notification.service';
+import { WebSocketServer } from '@nestjs/websockets';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class WebsocketService {
   constructor(
-    private readonly notificationService: NotificationService
-  ){}
+    private readonly notificationService: NotificationService,
+    private readonly authService: AuthService,
+  ) {}
 
-  create(createWebsocketDto: CreateWebsocketDto) {
-    return 'This action adds a new websocket';
-  }
+  // @WebSocketServer()
+  // server: Server;
 
-  findAll() {
-    return `This action returns all websocket`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} websocket`;
-  }
-
-  update(id: number, updateWebsocketDto: UpdateWebsocketDto) {
-    return `This action updates a #${id} websocket`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} websocket`;
+  async notifyIntervention(
+    payload: CreateWsNotificationDto,
+    server: Server,
+    clientSocket: Socket,
+  ) {
+    try {
+      await this.notificationService.sendNotification(payload);
+      server.emit('notifyIntervention', payload.content);
+      // envoi du mail a l'admin via firebaseService...
+      this.authService.sendEmailWithNodeMailer(
+        'loic.mboulefack@institutsaintjean.org',
+        '<h1> Hello Loic dev</h1>',
+        'mboulefacklekaneloic@gmail.com',
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

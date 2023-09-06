@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDTO } from 'src/user/dto/CreateUserDTO';
 import { User } from 'src/user/entities/User.entity';
 import { UserService } from 'src/user/user.service';
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   UserCredential,
   createUserWithEmailAndPassword,
@@ -13,7 +14,10 @@ import { FirebaseService } from 'src/firebase/firebase.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   async firebaseRegister(partialUser: Partial<User>): Promise<unknown> {
     try {
@@ -76,6 +80,24 @@ export class AuthService {
           cause: error,
         },
       );
+    }
+  }
+
+  async sendEmailWithNodeMailer(
+    emailSender: string,
+    templape: string,
+    emailReceiver: string,
+  ) {
+    try {
+      await this.mailerService.sendMail({
+        from: emailSender,
+        to: emailReceiver,
+        subject: 'Testing node mailer',
+        text: 'welcome',
+        html: templape,
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 }

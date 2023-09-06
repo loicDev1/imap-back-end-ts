@@ -2,9 +2,12 @@ import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
+  WebSocketServer,
+  ConnectedSocket,
 } from '@nestjs/websockets';
+import { Socket, Server } from 'socket.io';
 import { WebsocketService } from './websocket.service';
-import { CreateWebsocketDto } from './dto/create-websocket.dto';
+import { CreateWsNotificationDto } from './dto/create-websocket.dto';
 import { UpdateWebsocketDto } from './dto/update-websocket.dto';
 
 @WebSocketGateway({
@@ -15,31 +18,26 @@ import { UpdateWebsocketDto } from './dto/update-websocket.dto';
 export class WebsocketGateway {
   constructor(private readonly websocketService: WebsocketService) {}
 
-  @SubscribeMessage('createWebsocket')
-  create(@MessageBody() createWebsocketDto: CreateWebsocketDto) {
-    return this.websocketService.create(createWebsocketDto);
+  @WebSocketServer()
+  server: Server;
+
+  handleConnection(clientSocket: Socket) {
+    console.log(`client connected: ${clientSocket.id}`);
   }
 
-  @SubscribeMessage('findAllWebsocket')
-  findAll() {
-    return this.websocketService.findAll();
+  handleDisconnect(clientSocket: Socket) {
+    console.log(`client disconnected : ${clientSocket.id}`);
   }
 
-  @SubscribeMessage('findOneWebsocket')
-  findOne(@MessageBody() id: number) {
-    return this.websocketService.findOne(id);
-  }
-
-  @SubscribeMessage('updateWebsocket')
-  update(@MessageBody() updateWebsocketDto: UpdateWebsocketDto) {
-    return this.websocketService.update(
-      updateWebsocketDto.id,
-      updateWebsocketDto,
+  @SubscribeMessage('notifyIntervention')
+  notifyIntervention(
+    @MessageBody() payload: CreateWsNotificationDto,
+    @ConnectedSocket() clientSocket: Socket,
+  ) {
+    this.websocketService.notifyIntervention(
+      payload,
+      this.server,
+      clientSocket,
     );
-  }
-
-  @SubscribeMessage('removeWebsocket')
-  remove(@MessageBody() id: number) {
-    return this.websocketService.remove(id);
   }
 }

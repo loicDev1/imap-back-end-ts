@@ -77,16 +77,7 @@ export class UserService {
 
       return { ...user, userToken };
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: error.message,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
+      return error
     }
   }
 

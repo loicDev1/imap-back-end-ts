@@ -3,6 +3,7 @@ import { Notification } from './entities/notification.entity';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { decodeJwtTokenToUser } from 'src/helpers/helpers.utils';
+import { CreateNotificationDTO } from './dto/create-notification.dto';
 
 @Injectable()
 export class NotificationService {
@@ -11,8 +12,12 @@ export class NotificationService {
     private readonly notifRepository: Repository<Notification>,
   ) {}
 
-  sendNotification(content: string, senderId: string, receiverId: number) {
-    return 'This action adds a new notification';
+  async sendNotification(notification: CreateNotificationDTO) {
+    try {
+      return await this.notifRepository.save(notification);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getNotificationById(id: number): Promise<Notification | null> {
