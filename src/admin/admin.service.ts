@@ -22,23 +22,24 @@ export class AdminService {
       const result = await decodeJwtTokenToUser(userToken);
       return await this.userRepository.find();
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 
   async blockUser(
     userToken: string,
     userId: number,
-  ): Promise<HttpResponsePerso> {
+  ): Promise<any> {
     try {
       const result = await decodeJwtTokenToUser(userToken);
       const userUpdated = await this.userRepository.preload({
         id: userId,
-        isBlocked: true,
+        //isBlocked: true,
         blockedBy: result.data.id,
       });
-      this.userRepository.save(userUpdated);
-      return { status: HttpStatus.OK, message: 'User Blocked' };
+      userUpdated.isBlocked = !userUpdated.isBlocked
+      return this.userRepository.save(userUpdated);
+      //return { status: HttpStatus.OK, message: 'User Blocked' };
     } catch (error) {
       console.log(error);
     }
@@ -54,16 +55,17 @@ export class AdminService {
       partialUser.createdBy = result.data.id;
       return this.userService.register(partialUser, Request);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.message,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
+      return error
+      // throw new HttpException(
+      //   {
+      //     status: HttpStatus.BAD_REQUEST,
+      //     error: error.message,
+      //   },
+      //   HttpStatus.FORBIDDEN,
+      //   {
+      //     cause: error,
+      //   },
+      // );
     }
   }
 

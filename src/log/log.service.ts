@@ -23,4 +23,16 @@ export class LogService {
       console.log(error);
     }
   }
+
+  async getLogs() {
+    try {
+      return await this.LogRepository.find();
+    } catch (error) {
+      return error;
+    }
+  }
+
+
 }
+
+

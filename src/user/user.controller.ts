@@ -35,18 +35,23 @@ export class UserController {
     return this.userService.getUserProfile(userToken);
   }
 
+  @Get('logs')
+  getLogs(@Query('token') userToken: string) {
+    return this.userService.getLogs();
+  }
+
   @Patch('update')
   async updateUser(@Body() updateUser: UpdateUserDTO) {
     return this.userService.updateUser(updateUser);
   }
 
-  @Post('sendEmailresetPassword')
+  @Post('resetPassword')
   async resetPassword(
     @Body('email') email: string,
-    @Query('token') token,
+    //@Query('token') token,
     @Req() Request : any,
   ) {
-    return this.userService.ResetPasswordByEmail(email, Request, token);
+    return this.userService.ResetPasswordByEmail(email, Request, /*token*/);
   }
 
   @Delete(':id')

@@ -39,16 +39,17 @@ export class UserService {
       });
       return userCreated;
     } catch (error: any) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: error.message,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
+      return error;
+      // throw new HttpException(
+      //   {
+      //     status: HttpStatus.FORBIDDEN,
+      //     error: error.message,
+      //   },
+      //   HttpStatus.FORBIDDEN,
+      //   {
+      //     cause: error,
+      //   },
+      // );
     }
   }
 
@@ -77,7 +78,7 @@ export class UserService {
 
       return { ...user, userToken };
     } catch (error) {
-      return error
+      return error;
     }
   }
 
@@ -101,47 +102,50 @@ export class UserService {
     }
   }
 
-  async updateUser(
-    updateUser: UpdateUserDTO,
-  ): Promise<HttpResponsePerso | void> {
+  async updateUser(updateUser: UpdateUserDTO): Promise<Partial<User>> {
     try {
-      await this.userRepository.save(updateUser);
-      return { status: HttpStatus.OK, message: 'user updated successfully' };
+      return await this.userRepository.save(updateUser);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: error.message,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
+      return error;
+      // throw new HttpException(
+      //   {
+      //     status: HttpStatus.FORBIDDEN,
+      //     error: error.message,
+      //   },
+      //   HttpStatus.FORBIDDEN,
+      //   {
+      //     cause: error,
+      //   },
+      // );
     }
   }
 
-  async ResetPasswordByEmail(email: string, userToken: string, Request?: any) {
+  async ResetPasswordByEmail(
+    email: string,
+    /*userToken: string,*/ Request?: any,
+  ) {
     try {
-      const result = await decodeJwtTokenToUser(userToken);
+      //const result = await decodeJwtTokenToUser(userToken);
+      const user = await this.userRepository.findOneBy({ email });
       const { description, typeOperation } = getRequestInfos(Request);
-      this.logService.createLog({
-        description,
-        typeOperation,
-        user: result.data.id,
-      });
+      if (user) {
+        this.logService.createLog({
+          description,
+          typeOperation,
+          user: user.id,
+        });
+      }
       return await this.authService.FirebaseResetPasswordByEmail(email);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: error.message,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
+      return error;
+    }
+  }
+
+  async getLogs() {
+    try {
+      return await this.logService.getLogs();
+    } catch (error) {
+      return error;
     }
   }
 }
