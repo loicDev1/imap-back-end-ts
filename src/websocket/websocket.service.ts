@@ -22,14 +22,15 @@ export class WebsocketService {
     clientSocket: Socket,
   ) {
     try {
-      await this.notificationService.sendNotification(payload);
-      server.emit('notifyIntervention', payload.content);
+      const result = await this.notificationService.sendNotification(payload);
+      server.emit('notifyIntervention', {...payload, ...result});
+      return result;
       // envoi du mail a l'admin via firebaseService...
-      this.authService.sendEmailWithNodeMailer(
-        'loic.mboulefack@institutsaintjean.org',
-        '<h1> Hello Loic dev</h1>',
-        'mboulefacklekaneloic@gmail.com',
-      );
+      // this.authService.sendEmailWithNodeMailer(
+      //   'loic.mboulefack@institutsaintjean.org',
+      //   '<h1> Hello Loic dev</h1>',
+      //   'mboulefacklekaneloic@gmail.com',
+      // );
     } catch (error) {
       console.log(error);
     }

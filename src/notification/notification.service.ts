@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Param } from '@nestjs/common';
 import { Notification } from './entities/notification.entity';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,6 +25,17 @@ export class NotificationService {
       return await this.notifRepository.findOneBy({ id });
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async updateReadNotif( id : any): Promise<Notification | null> {
+    try {
+      const notif = await this.notifRepository.findOneBy({ id });
+      notif.isOpen = true
+      return await this.notifRepository.save(notif);
+    } catch (error) {
+      console.log(error);
+      return error
     }
   }
 

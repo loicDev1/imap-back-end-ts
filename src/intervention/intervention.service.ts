@@ -23,7 +23,9 @@ export class InterventionService {
         user,
         service,
       });
-    } catch (error) {}
+    } catch (error) {
+      return error
+    }
   }
 
   async getInterventionById(id: number): Promise<Intervention | null> {
@@ -48,6 +50,7 @@ export class InterventionService {
     try {
       return await this.interventionRepository.find();
     } catch (error) {
+      return error
       console.log(error);
     }
   }

@@ -80,7 +80,7 @@ export class AppModule implements NestModule {
       .apply(VerifyPersonnelRoleMiddleware)
       .forRoutes(
         { path: 'personnel*', method: RequestMethod.ALL },
-        { path: 'intervention*', method: RequestMethod.ALL },
+        // { path: 'intervention*', method: RequestMethod.ALL },
       )
       .apply(InsertLogMiddleware)
       .forRoutes('');

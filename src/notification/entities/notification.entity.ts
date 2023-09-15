@@ -10,6 +10,9 @@ export class Notification extends Timestamp {
   @Column({nullable: false})
   content: string;
 
+  @Column({default: false})
+  isOpen: boolean;
+
   @ManyToOne((type) => User, (user) => user.intervention, {
     cascade: true,
     nullable: false,

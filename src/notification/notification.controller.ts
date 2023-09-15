@@ -4,11 +4,13 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDTO } from './dto/create-notification.dto';
+import { UpdateNotificationDTO } from './dto/update-notification.dto';
 
 @Controller('notification')
 export class NotificationController {
@@ -22,6 +24,11 @@ export class NotificationController {
   @Get('notificationsByUser')
   async getNotificationsByUser(@Query('token') userToken: string) {
     return this.notificationService.getNotificationsByUser(userToken);
+  }
+  
+  @Patch('updateNotifStatus/:id')
+  async updateReadNotif(@Param('id') id ) {
+    return this.notificationService.updateReadNotif(id);
   }
 
   @Get('notifications')
