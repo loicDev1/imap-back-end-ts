@@ -34,6 +34,6 @@ export class CreateUserDTO {
   @IsNotEmpty()
   email: string;
 
-  @IsEmpty()
+  @IsNotEmpty()
   role: string;
 }
