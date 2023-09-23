@@ -1,14 +1,12 @@
 import { Timestamp } from 'src/Generics/TimeStamp';
+import { Intervention } from 'src/intervention/entities/Intervention.entity';
 import { User } from 'src/user/entities/User.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('')
 export class Notification extends Timestamp {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({nullable: false})
-  content: string;
 
   @Column({default: false})
   isOpen: boolean;
@@ -26,4 +24,11 @@ export class Notification extends Timestamp {
     eager: true,
   })
   receiver: User;
+
+  @ManyToOne((type) => Intervention, (inter) => inter.notification, {
+    cascade: true, 
+    nullable: false,
+    eager: true,
+  })
+  intervention: Intervention;
 }

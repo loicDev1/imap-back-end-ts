@@ -1,6 +1,6 @@
 
 export enum InterventionStatusEnum {
-    DEBUT = "debut",
+    DEBUT = "initié",
     EN_COURS = "enCours",
     ACHEVE = "acheve",
 }

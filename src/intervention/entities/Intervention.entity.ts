@@ -1,7 +1,8 @@
 import { InterventionStatusEnum } from 'src/Generics/InterventionStatusEnum';
+import { Notification } from 'src/notification/entities/notification.entity';
 import { Timestamp } from 'src/Generics/TimeStamp';
 import { User } from 'src/user/entities/User.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('intervention')
 export class Intervention extends Timestamp {
@@ -30,4 +31,7 @@ export class Intervention extends Timestamp {
     eager: true,
   })
   user: User;
+
+  @OneToMany((type) => Notification, (notif) => notif.intervention)
+  notification: Notification;
 }
