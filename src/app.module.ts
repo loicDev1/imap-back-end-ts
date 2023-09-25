@@ -25,6 +25,8 @@ import { NotificationModule } from './notification/notification.module';
 import { InsertLogMiddleware } from './middleware/insert-log/insert-log.middleware';
 import { WebsocketModule } from './websocket/websocket.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { DiagnosticModule } from './diagnostic/diagnostic.module';
+import { ResourceModule } from './resource/resource.module';
 @Module({
   imports: [
     UserModule,
@@ -58,10 +60,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
     LogModule,
     NotificationModule,
     WebsocketModule,
+    DiagnosticModule,
+    ResourceModule,
   ],
   controllers: [AppController],
   providers: [AppService, FirebaseService],
 })
+
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer

@@ -14,6 +14,7 @@ import { AdminService } from './admin.service';
 import { User } from 'src/user/entities/User.entity';
 import { CreateUserDTO } from 'src/user/dto/CreateUserDTO';
 import { UpdateUserRoleDTO } from './dto/UpdateUserRoleDTO';
+import { CreateDiagnosticDto } from 'src/diagnostic/dto/create-diagnostic.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -49,5 +50,18 @@ export class AdminController {
   @Delete('user/:id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.adminService.deleteUser(id);
+  }
+
+  @Post('createDiagnostic')
+  async createDiagnostic(
+    @Body() createDiagnosticDto: CreateDiagnosticDto,
+    @Query('token') token: string,
+  ) {
+    return this.adminService.createDiagnostic(createDiagnosticDto, token);
+  }
+
+  @Get('getDiagnostics')
+  getDiagnostics() {
+    return this.adminService.getDiagnostics();
   }
 }

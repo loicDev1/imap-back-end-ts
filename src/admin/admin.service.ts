@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { HttpResponsePerso } from 'src/Generics/HttpResponsePerso';
 import { UserService } from 'src/user/user.service';
 import { USER_ROLES } from 'src/Generics/UserRoleList';
+import { CreateDiagnosticDto } from 'src/diagnostic/dto/create-diagnostic.dto';
+import { DiagnosticService } from 'src/diagnostic/diagnostic.service';
 
 @Injectable()
 export class AdminService {
@@ -15,6 +17,7 @@ export class AdminService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userService: UserService,
+    private readonly diagnosticService: DiagnosticService,
   ) {}
 
   async getUsers(userToken: string): Promise<User[]> {
@@ -26,10 +29,7 @@ export class AdminService {
     }
   }
 
-  async blockUser(
-    userToken: string,
-    userId: number,
-  ): Promise<any> {
+  async blockUser(userToken: string, userId: number): Promise<any> {
     try {
       const result = await decodeJwtTokenToUser(userToken);
       const userUpdated = await this.userRepository.preload({
@@ -37,7 +37,7 @@ export class AdminService {
         //isBlocked: true,
         blockedBy: result.data.id,
       });
-      userUpdated.isBlocked = !userUpdated.isBlocked
+      userUpdated.isBlocked = !userUpdated.isBlocked;
       return this.userRepository.save(userUpdated);
       //return { status: HttpStatus.OK, message: 'User Blocked' };
     } catch (error) {
@@ -48,14 +48,14 @@ export class AdminService {
   async registerUser(
     userToken: string,
     partialUser: Partial<User>,
-    Request : any
+    Request: any,
   ): Promise<Partial<User>> {
     try {
       const result = await decodeJwtTokenToUser(userToken);
       partialUser.createdBy = result.data.id;
       return this.userService.register(partialUser, Request);
     } catch (error) {
-      return error
+      return error;
       // throw new HttpException(
       //   {
       //     status: HttpStatus.BAD_REQUEST,
@@ -91,5 +91,16 @@ export class AdminService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async createDiagnostic(
+    createDiagnosticDto: CreateDiagnosticDto,
+    userToken: string,
+  ) {
+    return this.diagnosticService.create(createDiagnosticDto, userToken);
+  }
+
+  async getDiagnostics() {
+    return this.diagnosticService.getDiagnostics();
   }
 }

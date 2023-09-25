@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { UserPersonnelEnum } from 'src/Generics/UserServiceEnum';
 import { Log } from 'src/log/entities/log.entity';
+import { Diagnostic } from 'src/diagnostic/entities/diagnostic.entity';
 
 @Entity('user')
 export class User extends Timestamp {
@@ -66,4 +67,7 @@ export class User extends Timestamp {
 
   @OneToMany((type) => Log, (log) => log.user)
   log: Log[];
+
+  @OneToMany((type) => Diagnostic, (Diagnostic) => Diagnostic.user)
+  diagnostic: Diagnostic[];
 }
