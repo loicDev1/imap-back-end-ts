@@ -31,7 +31,7 @@ export class NotificationController {
     return this.notificationService.updateReadNotif(id);
   }
 
-  @Get('notifications')
+  @Get('getNotifications')
   async getAllNotifications() {
     return this.notificationService.getAllNotifications();
   }

@@ -35,4 +35,24 @@ export class WebsocketService {
       console.log(error);
     }
   }
+
+  async notifyDiagnostic(
+    payload: CreateWsNotificationDto,
+    server: Server,
+    clientSocket: Socket,
+  ) {
+    try {
+      const result = await this.notificationService.sendNotification(payload);
+      server.emit('notifyDiagnostic', {...payload, ...result});
+      return result;
+      // envoi du mail a l'admin via firebaseService...
+      // this.authService.sendEmailWithNodeMailer(
+      //   'loic.mboulefack@institutsaintjean.org',
+      //   '<h1> Hello Loic dev</h1>',
+      //   'mboulefacklekaneloic@gmail.com',
+      // );
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

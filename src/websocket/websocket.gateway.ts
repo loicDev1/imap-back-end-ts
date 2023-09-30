@@ -34,9 +34,23 @@ export class WebsocketGateway {
     @MessageBody() payload: CreateWsNotificationDto,
     @ConnectedSocket() clientSocket: Socket,
   ) {
-    console.log(payload);
+    //console.log(payload);
     
     this.websocketService.notifyIntervention(
+      payload,
+      this.server,
+      clientSocket,
+    );
+  }
+
+  @SubscribeMessage('notifyDiagnostic')
+  notifyDiagnostic(
+    @MessageBody() payload: CreateWsNotificationDto,
+    @ConnectedSocket() clientSocket: Socket,
+  ) {
+    //console.log(payload);
+    
+    this.websocketService.notifyDiagnostic(
       payload,
       this.server,
       clientSocket,

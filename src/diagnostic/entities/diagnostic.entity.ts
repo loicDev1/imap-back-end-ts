@@ -1,6 +1,7 @@
 import { Timestamp } from 'src/Generics/TimeStamp';
 import { Resource } from 'src/resource/entities/resource.entity';
 import { User } from 'src/user/entities/User.entity';
+import { Notification } from 'src/notification/entities/notification.entity';
 import {
   Column,
   Entity,
@@ -38,4 +39,7 @@ export class Diagnostic extends Timestamp {
     eager: true,
   })
   user: User;
+
+  @OneToMany((type) => Notification, (notif) => notif.diagnostic)
+  notification: Notification;
 }
