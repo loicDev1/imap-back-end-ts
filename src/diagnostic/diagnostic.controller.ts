@@ -28,11 +28,6 @@ export class DiagnosticController {
     return this.diagnosticService.getDiagnostics();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.diagnosticService.findOne(+id);
-  }
-
   @Patch(':id')
   update(
     @Param('id') id: string,

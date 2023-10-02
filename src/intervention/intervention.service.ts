@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Intervention } from './entities/Intervention.entity';
 import { decodeJwtTokenToUser } from 'src/helpers/helpers.utils';
+import { UpdateInterventionDto } from './dto/UpdateInterventionDto';
 
 @Injectable()
 export class InterventionService {
@@ -24,7 +25,7 @@ export class InterventionService {
         service,
       });
     } catch (error) {
-      return error
+      return error;
     }
   }
 
@@ -50,8 +51,17 @@ export class InterventionService {
     try {
       return await this.interventionRepository.find();
     } catch (error) {
-      return error
+      return error;
       console.log(error);
+    }
+  }
+
+  async setStatusIntervention(UpdateIntervention: UpdateInterventionDto) {
+    try {
+      const r = await this.interventionRepository.save(UpdateIntervention);
+      return this.interventionRepository.findOneBy({ id: r.id });
+    } catch (error) {
+      return error;
     }
   }
 

@@ -54,10 +54,6 @@ export class DiagnosticService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} diagnostic`;
-  }
-
   update(id: number, updateDiagnosticDto: UpdateDiagnosticDto) {
     return `This action updates a #${id} diagnostic`;
   }

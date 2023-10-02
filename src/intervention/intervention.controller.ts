@@ -5,11 +5,13 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { InterventionService } from './intervention.service';
 import { CreateInterventionDTO } from './dto/CreateInterventionDTO';
+import { UpdateInterventionDto } from './dto/UpdateInterventionDto';
 
 @Controller('intervention')
 export class InterventionController {
@@ -31,6 +33,12 @@ export class InterventionController {
   @Get('getByConnectUser')
   async getInterventionByConnectUser(@Query('token') userToken: string) {
     return this.interService.getInterventionByUser(userToken);
+  }
+
+  @Patch('updateIntervention')
+  setStatusDiag(@Body() UpdateDiagnostic: UpdateInterventionDto) {
+    
+    return this.interService.setStatusIntervention(UpdateDiagnostic);
   }
 
   @Get()
