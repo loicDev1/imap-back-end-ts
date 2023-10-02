@@ -8,7 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserPersonnelEnum } from 'src/Generics/UserServiceEnum';
+import { Service } from 'src/Generics/UserServiceEnum';
 import { Log } from 'src/log/entities/log.entity';
 import { Diagnostic } from 'src/diagnostic/entities/diagnostic.entity';
 
@@ -41,10 +41,11 @@ export class User extends Timestamp {
   role: string;
 
   @Column({
-    type: 'enum',
-    enum: UserPersonnelEnum,
+    // type: 'enum',
+    //  enum: UserPersonnelEnum,
+    nullable: false,
   })
-  service: string;
+  service: Service;
 
   @Column({ default: false })
   isBlocked: boolean;
