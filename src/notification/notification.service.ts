@@ -28,14 +28,14 @@ export class NotificationService {
     }
   }
 
-  async updateReadNotif( id : any): Promise<Notification | null> {
+  async updateReadNotif(id: any): Promise<Notification | null> {
     try {
       const notif = await this.notifRepository.findOneBy({ id });
-      notif.isOpen = true
+      notif.isOpen = true;
       return await this.notifRepository.save(notif);
     } catch (error) {
       console.log(error);
-      return error
+      return error;
     }
   }
 
@@ -54,6 +54,14 @@ export class NotificationService {
   async getAllNotifications(): Promise<Notification[]> {
     try {
       return await this.notifRepository.find();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getNotificationByid(id: any): Promise<Notification> {
+    try {
+      return await this.notifRepository.findOneBy({ id });
     } catch (error) {
       console.log(error);
     }

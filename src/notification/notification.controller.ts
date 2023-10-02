@@ -35,4 +35,9 @@ export class NotificationController {
   async getAllNotifications() {
     return this.notificationService.getAllNotifications();
   }
+
+  @Get('getNotificationByid/:id')
+  async getNotificationByid(@Param('id') id: number) {
+    return this.notificationService.getNotificationByid(id);
+  }
 }
